@@ -7,18 +7,22 @@
   - name: update repo index
     apt:
       update_cache: yes
+    when: ansible_distribution == "Ubuntu"  
 
   - name: install apache2 package
     apt:
       name: apache2
       state: latest
+    when: ansible_distribution == "Ubuntu"  
 
   - name: add php support for apache2
     apt:
       name: libapache2-mod-php
       state: latest
+    when: ansible_distribution == "Ubuntu"  
 
   - name: install neofetch
     apt:
       name: neofetch
       state: latest
+    when: ansible_distribution == "Ubuntu"  
