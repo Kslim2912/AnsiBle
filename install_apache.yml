@@ -5,25 +5,25 @@
   tasks:
 
   - name: update repo index
-    apt:
+    package:
       update_cache: yes
     when: ansible_distribution in ["Debian","Ubuntu"] # works when there is mixed Servers
     # when: ansible_distribution == "Ubuntu" # works With Ubuntu Only
 
   - name: install apache2 package
-    apt:
+    package:
       name: apache2
       state: latest
     when: ansible_distribution in ["Debian","Ubuntu"]
 
   - name: add php support for apache2
-    apt:
+    package:
       name: libapache2-mod-php
       state: latest
     when: ansible_distribution in ["Debian","Ubuntu"]
 
   - name: install neofetch
-    apt:
+    package:
       name: neofetch
       state: latest
     when: ansible_distribution in ["Debian","Ubuntu"]
