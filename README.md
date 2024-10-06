@@ -1,4 +1,5 @@
 # AnsiBle
+# 10.5.2024
 
 Install OPENSSH ON SERVER
 	sudo apt install openssh-server
