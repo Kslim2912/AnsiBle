@@ -1,0 +1,125 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  # 10.6.2024
+  - name: Install Updates - ALL Proxmox Nodes
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Debian"
+  
+- hosts: Proxmox
+  become: true
+  tasks:
+
+  - name: Install Updates - OMV
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Debian"
+
+  - name: Install Updates - LXC-Debian-PR
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Debian"
+
+  - name: Install Updates - LXC Ubuntu-PR
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"  
+
+  - name: Install Updates - LXC_Helper_Script_Debian_PR
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Debian"
+
+  - name: Install Updates - LXC_Helper_Script_Ubuntu_PR
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Install Updates - LXC_Debian_Test
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Debian"
+
+  - name: Install Updates - LXC_Ubuntu_Test
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Install Updates - LXC_Helper_Script_Debian_Test
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Debian"
+
+  - name: Install Updates - LXC_Helper_Script_Ubuntu_Test
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+
+  #- name: Install Updates - Other Services
+
+
+  - name: update repo index
+    package:
+      update_cache: yes
+    when: ansible_distribution in ["Debian","Ubuntu"] # works when there is mixed Servers
+    # when: ansible_distribution == "Ubuntu" # works With Ubuntu Only
+
+  - #name: install apache and php package
+    #package:
+      #name: apache2
+      #name: libapache2-mod-php
+      #state: latest
+    #when: ansible_distribution in ["Debian","Ubuntu"]
+
+  #- name: add php support for apache2
+    #package:
+      #name: libapache2-mod-php
+      #state: latest
+    #when: ansible_distribution in ["Debian","Ubuntu"]
+
+  - #name: install neofetch
+    #package:
+      #name: neofetch
+      #state: latest
+    #when: ansible_distribution in ["Debian","Ubuntu"]
+
+  # 10.6.2024  
+  - name: install sudo
+    package:
+      name: sudo
+      state: latest
+    when: ansible_distribution in ["Debian","Ubuntu"]
+
+  #- name: install nala
+    #package:
+      #name: nala
+      #state: latest
+    #when: ansible_distribution in ["Debian","Ubuntu"]
+
+  - name: install git
+    package:
+      name: git
+      state: latest
+    when: ansible_distribution in ["Debian","Ubuntu"]
+
+  - name: install curl
+    package:
+      name: curl
+      state: latest
+    when: ansible_distribution in ["Debian","Ubuntu"]
+       

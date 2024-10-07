@@ -1,6 +1,53 @@
-#omvpidesktop
-192.168.8.74 #Wireguard-TBCV9520
+[Proxmox]
+192.168.8.51
+gmp.gpd.2geekllc # GothamMiniProx
+
+
+[OMV]
+#omvpidesktop.gpd.2geekllc
+#omvultra.gpd.2geekllc
+192.168.8.195 # OMVULTRA
+
+
+
+[LXC_Debian_PR]
+192.168.8.159 #135 (GMP-Authelia-Debian)
+
+
+[LXC_Ubuntu_PR]
+
+
+
+[LXC_Helper_Script_Debian_PR]
+192.168.8.251 #108 (GMP-HomePage)
+
+
+[LXC_Helper_Script_Ubuntu_PR]
+
+
+
+[LXC_Debian_Test]
 192.168.8.156 #TraeFik-GMP120
-192.168.8.133 #SSL-GMP122
+192.168.8.74 #Wireguard-TBCV9520
+192.168.8.254 #129 (GMP-TEST)
+
+[LXC_Ubuntu_Test]
 192.168.8.135 #BCP2-8701
 192.168.8.244 #BCP2-8702
+
+
+
+[LXC_Helper_Script_Debian_Test]
+192.168.8.205 #112 (GMP-Tautulli)
+192.168.8.210 #110 (GMP-Up-Time-Kuma)
+
+
+[LXC_Helper_Script_Ubuntu_Test]
+
+
+
+
+[Other_Services]
+192.168.8.133 #SSL-GMP122
+
+
