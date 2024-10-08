@@ -1,0 +1,92 @@
+# 10.7.2024
+# Updated Playbook with Error Checking
+
+---
+- name: Weekly Backup and Update of LXC Containers
+  hosts: lxc_containers
+  gather_facts: yes
+  become: yes
+  vars:
+    backup_server_ip: "{{ lookup('env', 'BACKUP_SERVER_IP') }}"
+    backup_user: "{{ lookup('env', 'BACKUP_SERVER_USER') }}"
+    backup_password: "{{ lookup('env', 'PROXMOX_BACKUP_PASSWORD') }}"
+    ssh_public_key: "{{ lookup('env', 'LXC_PUBLIC_SSH_KEY') }}"
+    lxc_user: "{{ lookup('env', 'LXC_USER') }}"
+    lxc_user_password: "{{ lookup('env', 'LXC_USER_PASSWORD') }}"
+    gotify_url: "{{ lookup('env', 'GOTIFY_URL') }}"
+    gotify_token: "{{ lookup('env', 'GOTIFY_TOKEN') }}"
+  tasks:
+    - name: Ensure required environment variables are set
+      fail:
+        msg: "Missing environment variable(s). Please ensure all required variables are set."
+      when: 
+        - backup_server_ip == ""
+        - backup_user == ""
+        - backup_password == ""
+        - ssh_public_key == ""
+        - lxc_user == ""
+        - lxc_user_password == ""
+        - gotify_url == ""
+        - gotify_token == ""
+
+    - name: Ensure '{{ lxc_user }}' user exists and set up SSH key
+      user:
+        name: "{{ lxc_user }}"
+        password: "{{ lxc_user_password | password_hash('sha512') }}"
+        shell: /bin/bash
+        state: present
+
+    - name: Associate SSH public key with '{{ lxc_user }}' user
+      authorized_key:
+        user: "{{ lxc_user }}"
+        key: "{{ ssh_public_key }}"
+        state: present
+
+    - name: Backup LXC container before update
+      command: "proxmox-backup-client backup root.pxar:/ --repository {{ backup_user }}@{{ backup_server_ip }}:backups"
+      environment:
+        PBS_PASSWORD: "{{ backup_password }}"
+      register: backup_result
+      ignore_errors: no  # Fail if backup fails
+
+    - name: Fail if backup did not complete successfully
+      fail:
+        msg: "Backup failed for LXC containers. Aborting updates."
+      when: backup_result.rc != 0
+
+    - name: Check for available updates (Debian/Ubuntu)
+      apt:
+        update_cache: yes
+        upgrade: dist
+        autoremove: yes
+      register: update_result
+      ignore_errors: no  # Fail if update process encounters an error
+
+    - name: Notify if updates are available
+      debug:
+        msg: "Updates have been applied: {{ update_result }}"
+
+    - name: Reboot if kernel update requires it
+      reboot:
+        msg: "Reboot required due to kernel update. Awaiting user confirmation..."
+        reboot_timeout: 3600
+      when: update_result.reboot_required
+      async: 3600
+      poll: 0
+      ignore_errors: yes
+
+    - name: Send Gotify notification after completion
+      uri:
+        url: "{{ gotify_url }}/message?token={{ gotify_token }}"
+        method: POST
+        body: '{"title": "LXC Update", "message": "LXC containers have been updated and backed up successfully.", "priority": 5}'
+        headers:
+          Content-Type: "application/json"
+        status_code: 200
+
+  handlers:
+    - name: Associate SSH Key
+      authorized_key:
+        user: "{{ lxc_user }}"
+        key: "{{ ssh_public_key }}"
+        state: present
